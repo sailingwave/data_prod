@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Eigendecomposition vs SVD</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Eigendecomposition vs SVD">
+  <meta name="author" content="Nan Wang">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Eigendecomposition vs SVD</h1>
+    <h2></h2>
+    <p>Nan Wang<br/></p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Basics</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The two approaches that are primarily used in principle components analysis (PCA) are</p>
+
+<ul>
+<li><p>Eigendecomposition <br>
+\[ A = Q \Lambda Q^{-1} (Q \Lambda Q^T \:\text{if A is symmetric}) \] <br>
+where \(Q\) is usually orthonormal</p></li>
+<li><p>Singular Value Decomposition (SVD) <br>
+\[ B = U \Sigma V^T \]</p></li>
+</ul>
+
+<p>ref links:</p>
+
+<p><a href="http://en.wikipedia.org/wiki/Eigendecomposition_of_a_matrix">http://en.wikipedia.org/wiki/Eigendecomposition_of_a_matrix</a> <br>
+<a href="http://en.wikipedia.org/wiki/Singular_value_decomposition">http://en.wikipedia.org/wiki/Singular_value_decomposition</a></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>Eigendecomposition vs SVD in PCA</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>In PCA, the PC&#39;s are eigenvectors of the the covariance (or correlation) matrix \(R\) of a given p-by-n data matrix \(X\). The sample covariance matrix of the columns of \(X\) has entries <br>
+\[ a_{jk} = \frac{1}{n-1}\sum_{i=1}^n (x_{ij}-\bar{x_{j}})(x_{ik}-\bar{x_{k}}) \]</p>
+
+<p>So people always center (and/or scale) matrix \(X\) so that the covariance \(R\) is just multiplying \(X^TX\) with a scalar 1/(n-1). Given \(X=U \Sigma V^T\) it then can be shown that using SVD <br>
+\[ X^TX = V \Sigma^T U^TU \Sigma V^T = V\Sigma^2V^T \]
+whereas using eigendecomposition on \(R\) gives <br>
+\[ R = Q \Lambda Q^T\]
+Therefore \(V = Q\) and \(\Lambda = \Sigma^2\)</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Example</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li><p>Simulate data</p>
+
+<pre><code class="r">seed = 123
+x = matrix(sample(1:10,size = 1000,replace = T),nrow = 10)    #a 50x20 matrix
+x_c = apply(x,2,function(v) v-mean(v))    #center the data
+</code></pre></li>
+<li><p>Compute the eigenvectors using eigendecomposition</p>
+
+<pre><code class="r">res1 = eigen(cov(x))    #on covariance
+res2 = eigen(t(x_c)%*%x_c)    #on x&#39;x
+</code></pre></li>
+<li><p>Compute the eigenvectors using SVD</p>
+
+<pre><code class="r">res3 = svd(x_c)
+</code></pre></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Example</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">p1 &lt;- qplot(res1$vectors[,1],res2$vectors[,1])
+p2 &lt;- qplot(res1$vectors[,1],res3$v[,1])
+grid.arrange(p1, p2, nrow = 1,main=textGrob(&quot;Comparison across results&quot;,gp=gpar(fontsize=20)))
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-5.png" alt="plot of chunk unnamed-chunk-5"> </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Basics'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='Eigendecomposition vs SVD in PCA'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Example'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Example'>
+         4
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        processEscapes: true
+      }
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script> -->
+  <script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="libraries/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+<!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>

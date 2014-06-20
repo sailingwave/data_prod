@@ -43,20 +43,23 @@ Therefore $V = Q$ and $\Lambda = \Sigma^2$
 ## Example
 
 1. Simulate data
-    ```{r}
+    
+    ```r
     seed = 123
     x = matrix(sample(1:10,size = 1000,replace = T),nrow = 10)    #a 50x20 matrix
     x_c = apply(x,2,function(v) v-mean(v))    #center the data
     ```
 
 2. Compute the eigenvectors using eigendecomposition
-    ```{r}
+    
+    ```r
     res1 = eigen(cov(x))    #on covariance
     res2 = eigen(t(x_c)%*%x_c)    #on x'x
     ```
 
 3. Compute the eigenvectors using SVD
-    ```{r}
+    
+    ```r
     res3 = svd(x_c)
     ```
 
@@ -64,13 +67,13 @@ Therefore $V = Q$ and $\Lambda = \Sigma^2$
 
 ## Example
 
-```{r,echo=FALSE}
-library(ggplot2)
-suppressPackageStartupMessages(library("gridExtra"))
-```
 
-```{r,fig.height=6,fig.width=12}
+
+
+```r
 p1 <- qplot(res1$vectors[,1],res2$vectors[,1])
 p2 <- qplot(res1$vectors[,1],res3$v[,1])
 grid.arrange(p1, p2, nrow = 1,main=textGrob("Comparison across results",gp=gpar(fontsize=20)))
 ```
+
+![plot of chunk unnamed-chunk-5](assets/fig/unnamed-chunk-5.png) 
